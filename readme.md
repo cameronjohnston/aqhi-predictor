@@ -8,18 +8,14 @@
 ### PHASE 0.1: Data accessibility
 #### _What are the required datasets? Are they accessible and programmatically downloadable/scrapeable without violating license agreements?_
 
-**TODO:**
+**COMPLETED:**
 - Write & test Python scripts to download and store locally in a PostgreSQL DB:
   - **Wildfires (historical)**: FIRMS (chosen for its free, well-documented API and extensive historical data).
   - **Wildfires (near-real-time)**: FIRMS.
   - **Wind velocity (historical)**: ECCC.
   - **Wind velocity (forecasts)**: ECCC ("UMOS statistically post-processed Forecast of the Regional Deterministic Prediction System (RDPS-UMOS-MLR)" collection).
-  - **Air Quality Health Index (AQHI, historical)**: ECCC ([collection link](https://api.weather.gc.ca/openapi?f=html#/aqhi-observations-realtime/getAqhi-observations-realtimeFeatures)).
-  - **AQHI (forecasts)**: ECCC ([collection link](https://api.weather.gc.ca/openapi?f=html#/aqhi-forecasts-realtime/items)).
-
-**Considerations:**
-- Validate data formats and ensure alignment across datasets (e.g., timestamps, geographic resolution).
-- Document licensing restrictions and ensure compliance.
+  - **Air Quality Health Index (AQHI, historical)**: ECCC ([MSC datamart link](https://eccc-msc.github.io/open-data/msc-data/aqhi/readme_aqhi_en/)).
+  - **AQHI (forecasts)**: ECCC ([MSC Geomet collection link](https://api.weather.gc.ca/openapi?f=html#/aqhi-forecasts-realtime/items)).
 
 ---
 
@@ -68,10 +64,3 @@
 
 ---
 
-## Final Notes:
-- Focus on showcasing **data engineering skills**:
-  - Data ingestion and ETL pipelines.
-  - Handling large-scale, real-time datasets.
-  - Integrating diverse data sources.
-- Visualization should be minimal but impactful, aiding in communicating results rather than demonstrating proficiency in visualization tools.
-- Regularly update documentation to reflect progress and key decisions.

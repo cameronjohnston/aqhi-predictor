@@ -1,0 +1,74 @@
+This is a (rough) diary to capture the processes followed, difficulties encountered, and solutions reached.
+
+
+========== PHASE 0.1: Data accessibility ==========
+
+
+===== FIRMS (Wildfires) =====
+
+For wildfires, since I'm not planning to integrate any forecasts (and I'm not sure if wildfire forecasts even exist),
+I chose FIRMS as the source for both building the historical dataset and for when "live" and scraping daily.
+Downloading was relatively straightforward. The documentation was pretty robust. I signed up for a free API key and then
+just had to build the URL including the bounded box (bbox, i.e. west/south/east/north boundaries) and dates I want to
+retrieve. It seems the historical observations are offered once daily, which is sufficient for this project.
+
+
+===== ECCC (wind velocities - historical observations) =====
+
+For wind velocities, my plan was/is to have two separate data sources (but both from ECCC), one for observations and
+one for forecasts. This section is just for observations.
+My needs were/are to uery data only from weather stations within a specified bbox.
+After some fumbling with the MSC Datamart offering (which seemingly would require me to first get station metadata from
+https://services.pacificclimate.org/met-data-portal-pcds/app/ or
+https://canwinmap.ad.umanitoba.ca/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3AStation_Inventory_EN_2021_11_30&outputFormat=csv&srs=EPSG%3A4326
+), I realized the MSC Geonet API was more aligned to meeting my needs in a simple fashion.
+It can accept a specific year/month/day and bounded box (bbox) latitude & longitudes as parameters.
+Because these parameters better support what I'm trying to do, turned out to be a much better option than webscraping.
+The implementation was pretty straightforward once reaching this discovery - I could experiment using the swagger UI
+(https://api.weather.gc.ca/openapi#/climate-hourly/getClimate-hourlyFeatures),
+and implement in python once I figured out what to do.
+
+
+===== ECCC (wind velocities - forecasts) =====
+
+This data is not offered by the MSC Geonet API, but is offered by MSC Datamart.
+Doc about this dataset: https://eccc-msc.github.io/open-data/msc-data/nwp_rdps/readme_rdps-statpostproc-datamart_en/
+Additionally, one could subscribe for real-time updates: https://eccc-msc.github.io/open-data/msc-datamart/amqp_en/
+If implemented, this would enable the most timely AQHI forecasting, without polling often to discover nothing ready.
+
+In terms of what data to use, there were the following considerations:
+1. Surface-level (Sfc) vs Above-ground-level (AGL).
+    This was a no-brainer as it seems AGL (10 metres) is standard practice for weather/AQ and has more data available.
+2. Of the forecasts available, how far ahead to include?
+    Every 6 hours, forecasts for 3, 6, 9, ... 84 hrs ahead are published.
+    It seems beyond 48 hrs ahead the forecast accuracy dwindles, and thus so does their usefulness.
+    So I shall consider each from 3-48 hours ahead.
+    Regardless, for this phase (phase 0 = feasibility), I just needed to confirm I can download and save to Postgres.
+3. How frequently to download & refresh AQHI forecasts?
+    I'd most likely start by downloading once daily, but perhaps later enhance.
+    For example to use AMQP & sarracenia to build updated AQHI forecasts every 6 hours,
+    immediately following the availability of new wind velocity forecasts.
+    Regardless, parking this topic for now as this is phase 0 = feasibility.
+
+
+===== ECCC (AQHI - historical observations) =====
+
+First I thought the MSC Geonet API would be best. But it seems there are only 2-3 days available back from today.
+(https://api.weather.gc.ca/openapi?f=html#/aqhi-observations-realtime/getAqhi-observations-realtimeFeatures)
+
+So plan B was the MSC Datamart: https://dd.weather.gc.ca/air_quality/aqhi/pyr/observation/monthly/csv/
+This appears to have at least 12 months available, so I used the July 2024 file (note pyr = Pacific & Yukon Region).
+This implementation was straightforward, as I'd already implemented the webscraper for ECCC wind velocity forecasts.
+
+
+===== ECCC (AQHI - forecasts) =====
+
+This is offered by the MSC Geomet API, so implementation was straightforward (similar to wind forecasts).
+For future consideration... MSC Datamart offers historical forecasts:
+https://hpfx.collab.science.gc.ca/air_quality/aqhi/pyr/forecast/monthly/csv/
+These are not needed for now, but may be valuable later to compare model accuracy vs ECCC's forecasts.
+
+
+[note2self] AQHI forecasts: https://catalogue.ec.gc.ca/geonetwork/srv/eng/catalog.search#/metadata/a563e47d-6eb9-4f7f-933c-222ae49fe57f
+
+
