@@ -1,6 +1,13 @@
 
 # Vancouver Air Quality Predictor
-### _Based on surrounding wildfires_
+### _Based on surrounding wildfires and wind velocity forecasts_
+
+## Why? ##
+Forecasting of the Air Quality Health Index (AQHI) is a service already provided by Environment Canada;
+as such, I neither expect nor hope for more accurate predictions than what they already provide.
+At the moment, this is a project for me to showcase my skills designing and building a climate service from scratch,
+working with climate/meteorological data, and experimenting with some ML techniques... and maybe even have some fun!
+
 
 ## PHASE 0: Feasibility study
 ### _Before anyone gets too excited... can we even do this?_
