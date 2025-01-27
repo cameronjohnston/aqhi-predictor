@@ -7,6 +7,26 @@ Forecasting of the Air Quality Health Index (AQHI) is a service already provided
 as such, I neither expect nor hope for more accurate predictions than what they already provide.
 At the moment, this is a project for me to showcase my skills designing and building a climate service from scratch,
 working with climate/meteorological data, and experimenting with some ML techniques... and maybe even have some fun!
+
+## Environment Setup ##
+Below are rough steps for setting up on Windows using python 3.12. Other OS / python versions haven't been tested.
+- git clone to desired location (creates the aqhi-predictor folder)
+- Install python 3.12 to default location without adding to PATH variables (see dependencies folder)
+- create python venv: <path_to_python_312>\python.exe -m venv <path_to_ahqi-predictor>
+- Install python libraries: <path_to_ahqi-predictor>\venv\scripts\python.exe -m pip install -r <path_to_aqhi-predictor>\src\requirements.txt
+- Add a config.ini file to <path_to_ahqi-predictor>\src\app (see config_SAMPLE.ini)
+- Obtain a FIRMS API key (free), then add it to your config.ini: https://firms.modaps.eosdis.nasa.gov/api/map_key/
+- Create DB; create database, schema, and tables; update url in config.ini (TODO: provide more setup instructions for postgres)
+
+## Running some commands ## 
+### Gathering source data and save to DB ###
+#### Note the following are for one month only; more months should be used to build a more accurate model. ####
+- Wildfire observations (from FIRMS): <path_to_aqhi-predictor>\venv\scripts\python.exe <path_to_aqhi-predictor>\src\app\main.py --data-type wildfire --start-date 2024-07-01 --end-date 2024-07-31
+- Wind velocity observations (from ECCC): <path_to_aqhi-predictor>\venv\scripts\python.exe <path_to_aqhi-predictor>\src\app\main.py --data-type wind --start-date 2024-07-01 --end-date 2024-07-31
+- AQHI observations (from ECCC): <path_to_aqhi-predictor>\venv\scripts\python.exe <path_to_aqhi-predictor>\src\app\main.py --data-type aqhi --start-date 2024-07-01 --end-date 2024-07-31
+- Wind velocity forecasts (from ECCC): <path_to_aqhi-predictor>\venv\scripts\python.exe <path_to_aqhi-predictor>\src\app\main.py --data-type wind-forecast --start-date 2024-07-01 --end-date 2024-07-31
+- AQHI forecasts (from ECCC): <path_to_aqhi-predictor>\venv\scripts\python.exe <path_to_aqhi-predictor>\src\app\main.py --data-type aqhi-forecast --start-date 2024-07-01 --end-date 2024-07-31
+
 ### _Following is the project plan (phased approach). Further commentary is under doc/diary.txt._
 
 
