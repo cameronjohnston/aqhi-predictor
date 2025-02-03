@@ -10,7 +10,7 @@ from domain.interfaces import WindVelocityDataSource, AQHIDataSource
 from domain.models import WindVelocity, WindVelocityAvg, AQHI
 from infrastructure.config import load_config
 from infrastructure.persistence.repositories.station_metadata_repo import SQLAlchemyStationRepository
-from infrastructure.util.date import daterange
+from infrastructure.util.datetime import daterange
 
 
 class ECCCWindVelocityClient(WindVelocityDataSource):

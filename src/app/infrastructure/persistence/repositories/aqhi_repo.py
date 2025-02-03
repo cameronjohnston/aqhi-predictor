@@ -1,6 +1,7 @@
-from typing import List
-from sqlalchemy import Column, Float, Integer, String, DateTime, Date
-from domain.models import AQHI
+from datetime import date
+from typing import List, Optional
+from sqlalchemy import Column, Float, Integer, String, DateTime, Date, and_
+from domain.models import AQHI, BBox
 from domain.interfaces import AQHIRepository
 from infrastructure.persistence.database import Base, session_scope
 
@@ -17,7 +18,7 @@ class ECCCAQHISQLAlchemyModel(Base):
     forecast_datetime = Column(DateTime, nullable=True)
 
 
-class SQLAlchemyAQHIRepository:
+class SQLAlchemyAQHIRepository(AQHIRepository):
     def save(self, aqhi_data: List[AQHI]) -> None:
         aqhi_models = [
             ECCCAQHISQLAlchemyModel(
@@ -35,5 +36,49 @@ class SQLAlchemyAQHIRepository:
             session.add_all(aqhi_models)
             session.commit()
 
+    def get(
+        self,
+        bbox: Optional[BBox] = None,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
+        is_forecast: bool = False,
+    ) -> List[AQHI]:
+        with session_scope() as session:
+            query = session.query(ECCCAQHISQLAlchemyModel)
+
+            if bbox:
+                query = query.filter(
+                    ECCCAQHISQLAlchemyModel.longitude.between(bbox.west, bbox.east),
+                    ECCCAQHISQLAlchemyModel.latitude.between(bbox.south, bbox.north),
+                )
+            if start_date:
+                if is_forecast:
+                    query = query.filter(ECCCAQHISQLAlchemyModel.forecast_datetime >= start_date)
+                else:
+                    query = query.filter(ECCCAQHISQLAlchemyModel.observed_datetime >= start_date)
+            if end_date:
+                if is_forecast:
+                    query = query.filter(ECCCAQHISQLAlchemyModel.forecast_datetime <= end_date)
+                else:
+                    query = query.filter(ECCCAQHISQLAlchemyModel.observed_datetime <= end_date)
+            if is_forecast:
+                query = query.filter(ECCCAQHISQLAlchemyModel.forecast_datetime.isnot(None))
+            else:
+                query = query.filter(ECCCAQHISQLAlchemyModel.forecast_datetime.is_(None))
+
+            # Query DB; build list of AQHI instances; return it
+            query_res = query.all()
+            aqhi_data = [
+                AQHI(
+                    latitude=row.latitude,
+                    longitude=row.longitude,
+                    observed_datetime=row.observed_datetime,
+                    value=row.value,
+                    source=row.source,
+                    forecast_datetime=row.forecast_datetime,
+                )
+                for row in query_res
+            ]
+            return aqhi_data
 
 

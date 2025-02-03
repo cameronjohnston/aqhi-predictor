@@ -1,7 +1,8 @@
 from datetime import date
 from typing import List
 from domain.interfaces import WindVelocityDataSource, WindVelocityRepository, WindVelocityAvgRepository
-from domain.models import WindVelocity, WindVelocityService
+from domain.models import WindVelocity
+from domain.services import WindVelocityService
 
 
 def process_wind_velocity_data(
