@@ -1,13 +1,14 @@
 import csv
 from io import StringIO
 import json
+import logging
 import pandas as pd
 import requests
 from typing import List
 from datetime import date, datetime, timedelta
 
 from domain.interfaces import WindVelocityDataSource, AQHIDataSource
-from domain.models import WindVelocity, WindVelocityAvg, AQHI
+from domain.entities import WindVelocity, WindVelocityAvg, AQHI
 from infrastructure.config import load_config
 from infrastructure.persistence.repositories.station_metadata_repo import SQLAlchemyStationRepository
 from infrastructure.util.datetime import daterange
@@ -61,7 +62,7 @@ class ECCCWindVelocityClient(WindVelocityDataSource):
                         source_direction=int(f['properties']['WIND_DIRECTION']) * 10,  # To make into degrees clockwise of North
                         source='ECCC-MSC-Geomet-climate-hourly',
                     ) for f in data['features']
-                if f['properties']['WIND_SPEED'] is not None
+                if f['properties']['WIND_SPEED'] is not None and f['properties']['WIND_DIRECTION'] is not None
                 ]
 
                 all_velocities.extend(date_velocities)
@@ -89,12 +90,12 @@ class ECCCWindVelocityClient(WindVelocityDataSource):
 
         # Loop through the stations and download data
         data = []
-        print(f"Downloading data for {len(stations_in_bbox)} stations...")
+        logging.info(f"Downloading data for {len(stations_in_bbox)} stations...")
         for s in stations_in_bbox:
             if s.station_id != 27226:
                 pass  # continue  # TODO_DEBUG: temp (only discovery island)
 
-            print(f"Downloading data for station: {s.station_name} (ID: {s.station_id})")
+            logging.info(f"Downloading data for station: {s.station_name} (ID: {s.station_id})")
 
             # Fetch the data
             params['stationID'] = s.station_id
@@ -123,10 +124,10 @@ class ECCCWindVelocityClient(WindVelocityDataSource):
 
                 # Now add those velocities to the master list
                 if cnt := len(station_velocities):
-                    print(f"Found {cnt} velocities for station: {s.station_name} (ID: {s.station_id})")
+                    logging.info(f"Found {cnt} velocities for station: {s.station_name} (ID: {s.station_id})")
                     data.extend(station_velocities)
             else:
-                print(f"Failed to download data for {s.station_name} (StationID={s.station_id}) (HTTP {response.status_code})")
+                logging.info(f"Failed to download data for {s.station_name} (StationID={s.station_id}) (HTTP {response.status_code})")
 
         return data
 

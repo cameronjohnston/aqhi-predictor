@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List, Optional
 from sqlalchemy import Column, Date, String, Float
-from domain.models import BBox, Wildfire
+from domain.entities import BBox, Wildfire
 from domain.interfaces import WildfireRepository
 from infrastructure.persistence.database import Base, session_scope
 
@@ -51,8 +51,8 @@ class SQLAlchemyWildfireRepository(WildfireRepository):
 
             if bbox:
                 query = query.filter(
-                    SQLAlchemyWildfireRepository.longitude.between(bbox.west, bbox.east),
-                    SQLAlchemyWildfireRepository.latitude.between(bbox.south, bbox.north),
+                    FIRMSWildfireSQLAlchemyModel.longitude.between(bbox.west, bbox.east),
+                    FIRMSWildfireSQLAlchemyModel.latitude.between(bbox.south, bbox.north),
                 )
             if start_date:
                 query = query.filter(FIRMSWildfireSQLAlchemyModel.asofdate >= start_date)

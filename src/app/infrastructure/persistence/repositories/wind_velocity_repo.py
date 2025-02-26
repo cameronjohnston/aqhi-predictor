@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List, Optional
 from sqlalchemy import Column, Float, Integer, String, DateTime, Date
-from domain.models import BBox, WindVelocity, WindVelocityAvg
+from domain.entities import BBox, WindVelocity, WindVelocityAvg
 from domain.interfaces import WindVelocityRepository, WindVelocityAvgRepository
 from infrastructure.persistence.database import Base, session_scope
 

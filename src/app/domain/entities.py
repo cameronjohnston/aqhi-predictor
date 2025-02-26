@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 import math
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from domain.util.wind import x_y_components  # WindVelocityService
 
@@ -16,6 +16,11 @@ class Wildfire:
     asofdate: date
     source: str
 
+    def __post_init__(self):
+        self.observed_datetime = datetime(
+            year=self.asofdate.year, month=self.asofdate.month, day=self.asofdate.day,
+            hour=12,  # Assume observed time to be noon
+        )
 
 @dataclass
 class WindVelocity:
@@ -45,6 +50,8 @@ class WindVelocityAvg:
     source_direction: int  # In degrees, with 0 = North and increasing going clockwise (meteorological convention)
     source: str
     forecast_datetime: (datetime, None) = None
+
+
 
     def __post_init__(self):
         """ Compute and assign the X and Y components of velocity """
@@ -93,5 +100,13 @@ class BBox:
         """Checks if a given coordinate is inside the bounding box."""
         return self.west <= longitude <= self.east and self.south <= latitude <= self.north
 
+
+@dataclass
+class ModelTrainingResult:
+    model_id: str
+    trained_at: datetime
+    metrics: Dict[str, float]  # Store accuracy, loss, etc.
+    status: str
+    model_data: bytes  # Raw model data
 
 

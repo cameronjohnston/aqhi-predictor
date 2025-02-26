@@ -1,13 +1,14 @@
 from bs4 import BeautifulSoup
 from datetime import date, datetime, timedelta, timezone
 import json
+import logging
 import pandas as pd
 import re
 import requests
 from typing import Dict, List
 
 from domain.interfaces import WindVelocityDataSource, AQHIDataSource
-from domain.models import AQHI, BBox, WindVelocity, WindVelocityAvg
+from domain.entities import AQHI, BBox, WindVelocity, WindVelocityAvg
 from infrastructure.config import load_config
 
 
@@ -92,7 +93,7 @@ class ECCCWindVelocityForecastWebscraper(WindVelocityDataSource):
                 forecast_datetime=datetime.fromisoformat(speed['properties']['forecast_datetime']),
             ))
 
-        print(f"Matched {len(velocities)} wind forecast pairs.")
+        logging.info(f"Matched {len(velocities)} wind forecast pairs.")
         return velocities
 
     def fetch(self, start_date: date, end_date: date, region: str = 'VANCOUVER') -> List[WindVelocity]:
@@ -112,7 +113,7 @@ class ECCCWindVelocityForecastWebscraper(WindVelocityDataSource):
 
                 # Retrieve wind direction forecast and store in dict
                 file_url = f"{self.base_dir(mrs, ha)}/{wind_dir_file}"
-                print(f"Downloading {file_url}...")
+                logging.info(f"Downloading {file_url}...")
                 response = requests.get(file_url)
                 response.raise_for_status()
                 data = json.loads(response.text)
@@ -123,7 +124,7 @@ class ECCCWindVelocityForecastWebscraper(WindVelocityDataSource):
 
                 # Retrieve wind direction forecast and store in dict
                 file_url = f"{self.base_dir(mrs, ha)}/{wind_speed_file}"
-                print(f"Downloading {file_url}...")
+                logging.info(f"Downloading {file_url}...")
                 response = requests.get(file_url)
                 response.raise_for_status()
                 data = json.loads(response.text)

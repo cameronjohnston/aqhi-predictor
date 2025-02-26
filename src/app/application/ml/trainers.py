@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import List
 
-from domain.models import AQHI, Wildfire, WindVelocity
+from domain.entities import AQHI, Wildfire, WindVelocity
 
 
 @dataclass

@@ -4,7 +4,7 @@ import requests
 from typing import List
 from datetime import date, timedelta
 from domain.interfaces import WildfireDataSource
-from domain.models import Wildfire
+from domain.entities import Wildfire
 from infrastructure.config import load_config
 
 

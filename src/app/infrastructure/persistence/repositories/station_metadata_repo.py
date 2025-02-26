@@ -1,6 +1,6 @@
 from typing import List, Optional
 from sqlalchemy import Column, Float, Integer, String, and_
-from domain.models import StationMetadata
+from domain.entities import StationMetadata
 from infrastructure.persistence.database import Base, session_scope
 
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import date
 from typing import List, Optional
-from domain.models import Wildfire, WindVelocity, WindVelocityAvg, AQHI, BBox
+from domain.entities import Wildfire, WindVelocity, WindVelocityAvg, AQHI, BBox, ModelTrainingResult
 
 
 class WildfireDataSource(ABC):
@@ -64,5 +64,30 @@ class AQHIRepository(ABC):
     def get(self, bbox: Optional[BBox] = None, start_date: Optional[date] = None, end_date: Optional[date] = None, 
             is_forecast: bool = False) -> List[AQHI]:
         pass
+
+
+class ModelTrainingResultRepository(ABC):
+    """Domain repository interface for storing and retrieving trained models"""
+
+    @abstractmethod
+    def save(self, model_result: ModelTrainingResult) -> None:
+        """Persist a trained model result"""
+        pass
+
+    @abstractmethod
+    def get(self, model_id: str) -> Optional[ModelTrainingResult]:
+        """Retrieve a trained model result by ID"""
+        pass
+
+    @abstractmethod
+    def get_latest(self) -> Optional[ModelTrainingResult]:
+        """ Retrieve the latest model result"""
+        pass
+
+    @property
+    def cn(self):
+        return type(self).__name__
+
+
 
 

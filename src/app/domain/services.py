@@ -7,10 +7,12 @@ from domain.util.wind import meteorological2math, math2meteorological
 
 
 class WindVelocityService:
-    from domain.models import WindVelocityAvg
+    from domain.entities import WindVelocityAvg
 
     @staticmethod
     def calculate_daily_avg(wind_velocities: List["WindVelocity"]) -> List[WindVelocityAvg]:
+        from domain.entities import WindVelocityAvg
+
         # Group wind velocities by latitude, longitude, and observed date
         grouped_data = defaultdict(list)
 
@@ -58,7 +60,7 @@ class WindVelocityService:
 
 class WildfireImpactScorer:
     """Calculates the estimated impact of wildfires on AQHI."""
-    from domain.models import Wildfire, WindVelocity
+    from domain.entities import Wildfire, WindVelocity
 
     def __init__(self, aqhi_locations: List[Tuple[float, float]], hrs_ahead: List[int], decay_factor: float = 0.5):
         """
